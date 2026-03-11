@@ -165,7 +165,7 @@ export default function Dashboard() {
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
               </svg>
             </div>
-            <span style={{ fontSize: '15px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff' }}>SOC Assistant</span>
+            <span style={{ fontSize: '15px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff' }}>Keystone Dispatch Assistant</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -186,7 +186,7 @@ export default function Dashboard() {
               <span style={{ color: '#00FFB2' }}>{operator.name} — {operator.operator_id}</span>
             </h1>
             <p className="mono" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.04em', margin: 0 }}>
-              Security Operations Center
+              Keystone Security Operations Center
             </p>
           </div>
 
@@ -219,7 +219,7 @@ export default function Dashboard() {
         </main>
 
         <footer style={{ borderTop: '1px solid rgba(255,255,255,0.04)', padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span className="mono" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.06em' }}>SOC ASSISTANT · CLASSIFIED INTERNAL USE ONLY</span>
+          <span className="mono" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.06em' }}>KEYSTONE DISPATCH ASSISTANT · CLASSIFIED INTERNAL USE ONLY</span>
           <span className="mono" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.06em' }}>OPERATOR: {operator.operator_id} · {operator.role.toUpperCase()}</span>
         </footer>
       </div>
