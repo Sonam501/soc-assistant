@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
     const message = await client.messages.create({
       model: 'claude-opus-4-6',
-      max_tokens: 1024,
+      max_tokens: 2048,
       messages: [
         {
           role: 'user',
@@ -39,21 +39,30 @@ CRITICAL RULES:
 - Never invent details not visible in the image
 - Be factual and observational only
 - Use professional security report language
+- Identify ALL subjects visible in the image, not just the primary one
+- Each subject gets their own complete description
 
 Respond ONLY with a valid JSON object in exactly this format:
 {
-  "subjectType": "Human / Vehicle / Animal / Object",
-  "gender": "Male / Female / Cannot confirm",
-  "ethnicity": "Description or Cannot confirm",
-  "heightBuild": "Estimated height and build or Cannot confirm",
-  "headHair": "Hair color, style, headwear description or Cannot confirm",
-  "upperBody": "Clothing color, type, description",
-  "lowerBody": "Pants/shorts/skirt color and type",
-  "footwear": "Shoe type and color or Cannot confirm",
-  "objects": "Any bags, weapons, items carried or None visible",
-  "activity": "What the subject is doing",
-  "reportSentence": "A single professional third-person sentence summarizing the subject for an incident report"
-}`,
+  "subjects": [
+    {
+      "subjectNumber": 1,
+      "subjectType": "Human / Vehicle / Animal / Object",
+      "gender": "Male / Female / Cannot confirm",
+      "ethnicity": "Description or Cannot confirm",
+      "heightBuild": "Estimated height and build or Cannot confirm",
+      "headHair": "Hair color, style, headwear description or Cannot confirm",
+      "upperBody": "Clothing color, type, description",
+      "lowerBody": "Pants/shorts/skirt color and type",
+      "footwear": "Shoe type and color or Cannot confirm",
+      "objects": "Any bags, weapons, items carried or None visible",
+      "activity": "What the subject is doing",
+      "reportSentence": "A single professional third-person sentence summarizing this subject for an incident report"
+    }
+  ]
+}
+
+If there is only one subject, the array will have one item. If there are multiple subjects, include all of them.`,
             },
           ],
         },
