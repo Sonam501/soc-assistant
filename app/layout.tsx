@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'SOC Assistant',
+  title: 'KEYSTONE DISPATCH ASSISTANT',
   description: 'Security Operations Center - Incident Reporting Tool',
 }
 
