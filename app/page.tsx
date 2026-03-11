@@ -70,6 +70,18 @@ export default function Dashboard() {
       accent: '#A78BFA',
       href: '/my-reports',
     },
+    {
+      id: 'floorplan',
+      label: 'Map Reader',
+      sublabel: 'Read floorplans for dispatch intelligence',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="28" height="28">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+      ),
+      accent: '#38BDF8',
+      href: '/floorplan',
+    },
   ]
 
   return (
