@@ -58,7 +58,7 @@ export default function LoginPage() {
           padding: 20px;
         }
         .login-box {
-          width: 100%; max-width: 560px;
+          width: 100%; max-width: 860px;
           background: rgba(255,255,255,0.025);
           border: 1px solid rgba(255,255,255,0.08);
           border-radius: 2px;
@@ -156,7 +156,7 @@ export default function LoginPage() {
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
               </div>
-              <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#fff', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '22px', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#fff', whiteSpace: 'nowrap' }}>
                 Keystone Dispatch Assistant
               </span>
             </div>
