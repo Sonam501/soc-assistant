@@ -70,6 +70,7 @@ MISSING FLAG RULES — these specific fields MUST be flagged if not stated:
 - Badge ID → if dispatch is mentioned but badge ID not given → [MISSING: Badge ID]
 - Call reference number → if dispatch is mentioned but reference number not given → [MISSING: Call Reference No.]
 - Follow-up call details → if not mentioned → [MISSING: follow-up call details]
+- Police arrival time → if police arrival is mentioned but no exact time given → [MISSING: police arrival time]
 
 VOICE RULES:
 - Always use passive or impersonal constructions — never reveal an operator is acting
