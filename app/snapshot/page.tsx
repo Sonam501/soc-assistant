@@ -31,6 +31,7 @@ export default function SnapshotPage() {
   const [cameraName, setCameraName] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
   const [result, setResult] = useState<AnalysisResult | null>(null)
+  const [dismissedSubjects, setDismissedSubjects] = useState<number[]>([])
   const [error, setError] = useState('')
   const [copied, setCopied] = useState('')
 
@@ -45,6 +46,7 @@ export default function SnapshotPage() {
     reader.onload = (e) => setImage(e.target?.result as string)
     reader.readAsDataURL(file)
     setResult(null)
+    setDismissedSubjects([])
     setError('')
   }
 
@@ -69,6 +71,7 @@ export default function SnapshotPage() {
     setAnalyzing(true)
     setError('')
     setResult(null)
+    setDismissedSubjects([])
     try {
       const base64 = image.split(',')[1]
       const mediaType = imageFile.type as 'image/jpeg' | 'image/png' | 'image/webp'
@@ -93,6 +96,14 @@ export default function SnapshotPage() {
     setTimeout(() => setCopied(''), 2000)
   }
 
+  const dismissSubject = (subjectNumber: number) => {
+    setDismissedSubjects(prev => [...prev, subjectNumber])
+  }
+
+  const undoDismiss = (subjectNumber: number) => {
+    setDismissedSubjects(prev => prev.filter(n => n !== subjectNumber))
+  }
+
   const getFullDescription = (s: Subject) => `Subject Type: ${s.subjectType}
 Gender: ${s.gender}
 Ethnicity: ${s.ethnicity}
@@ -103,6 +114,9 @@ Lower Body: ${s.lowerBody}
 Footwear: ${s.footwear}
 Objects / Items: ${s.objects}
 Activity: ${s.activity}`
+
+  const visibleSubjects = result?.subjects.filter(s => !dismissedSubjects.includes(s.subjectNumber)) || []
+  const dismissedList = result?.subjects.filter(s => dismissedSubjects.includes(s.subjectNumber)) || []
 
   return (
     <>
@@ -134,6 +148,13 @@ Activity: ${s.activity}`
         .subject-card:last-child { margin-bottom: 0; }
         .subject-card-header { padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); }
         .subject-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: #A78BFA; text-transform: uppercase; font-weight: 600; }
+        .subject-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 8px; }
+        .gender-badge { padding: 2px 8px; border-radius: 2px; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+        .gender-male { background: rgba(0,150,255,0.1); border: 1px solid rgba(0,150,255,0.3); color: #60A5FA; }
+        .gender-female { background: rgba(255,107,178,0.1); border: 1px solid rgba(255,107,178,0.3); color: #F472B6; }
+        .gender-unknown { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); }
+        .dismiss-btn { background: rgba(255,107,53,0.06); border: 1px solid rgba(255,107,53,0.2); color: rgba(255,107,53,0.6); font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 2px; cursor: pointer; transition: all 0.15s; }
+        .dismiss-btn:hover { background: rgba(255,107,53,0.12); border-color: rgba(255,107,53,0.4); color: #FF6B35; }
         .subject-card-body { padding: 14px 16px; }
         .result-row { display: flex; gap: 12px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
         .result-row:last-child { border-bottom: none; }
@@ -143,9 +164,13 @@ Activity: ${s.activity}`
         .copy-btn { padding: 6px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 2px; color: rgba(255,255,255,0.5); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; margin-right: 6px; margin-top: 10px; }
         .copy-btn:hover { border-color: rgba(0,255,178,0.3); color: #00FFB2; }
         .copy-btn.copied { border-color: rgba(0,255,178,0.5); color: #00FFB2; background: rgba(0,255,178,0.06); }
+        .dismissed-section { margin-top: 16px; padding: 10px 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 2px; }
+        .dismissed-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+        .undo-btn { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.3); font-family: 'JetBrains Mono', monospace; font-size: 9px; padding: 2px 8px; border-radius: 2px; cursor: pointer; transition: all 0.15s; }
+        .undo-btn:hover { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.5); }
         .error-msg { background: rgba(255,107,53,0.08); border: 1px solid rgba(255,107,53,0.2); border-radius: 2px; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #FF6B35; margin-top: 12px; }
         .empty-state { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.2); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; }
-        .subjects-count { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 0.06em; }
+        .subjects-count { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 0.06em; margin-left: auto; }
         @media (max-width: 900px) { .main { grid-template-columns: 1fr; } }
       `}</style>
 
@@ -194,7 +219,7 @@ Activity: ${s.activity}`
               <span className="panel-title" style={{ color: '#A78BFA' }}>Analysis Results</span>
               {result && (
                 <span className="subjects-count">
-                  {result.subjects.length} subject{result.subjects.length > 1 ? 's' : ''} detected
+                  {visibleSubjects.length} of {result.subjects.length} subject{result.subjects.length > 1 ? 's' : ''} shown
                 </span>
               )}
             </div>
@@ -208,39 +233,71 @@ Activity: ${s.activity}`
                   <div>AI is processing the image</div>
                 </div>
               )}
-              {result && result.subjects.map((subject, index) => (
-                <div key={index} className="subject-card">
-                  <div className="subject-card-header">
-                    <span className="subject-badge">Subject {subject.subjectNumber}</span>
-                    <span className="mono" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)' }}>{subject.subjectType} · {subject.gender}</span>
-                  </div>
-                  <div className="subject-card-body">
-                    <div className="result-row"><div className="result-label">Ethnicity</div><div className="result-value">{subject.ethnicity}</div></div>
-                    <div className="result-row"><div className="result-label">Height / Build</div><div className="result-value">{subject.heightBuild}</div></div>
-                    <div className="result-row"><div className="result-label">Head / Hair</div><div className="result-value">{subject.headHair}</div></div>
-                    <div className="result-row"><div className="result-label">Upper Body</div><div className="result-value">{subject.upperBody}</div></div>
-                    <div className="result-row"><div className="result-label">Lower Body</div><div className="result-value">{subject.lowerBody}</div></div>
-                    <div className="result-row"><div className="result-label">Footwear</div><div className="result-value">{subject.footwear}</div></div>
-                    <div className="result-row"><div className="result-label">Objects / Items</div><div className="result-value">{subject.objects}</div></div>
-                    <div className="result-row"><div className="result-label">Activity</div><div className="result-value">{subject.activity}</div></div>
-                    <div className="report-sentence">{subject.reportSentence}</div>
-                    <div>
-                      <button
-                        className={`copy-btn ${copied === `full-${index}` ? 'copied' : ''}`}
-                        onClick={() => copyText(getFullDescription(subject), `full-${index}`)}
-                      >
-                        {copied === `full-${index}` ? '✓ Copied' : 'Copy Full'}
-                      </button>
-                      <button
-                        className={`copy-btn ${copied === `sentence-${index}` ? 'copied' : ''}`}
-                        onClick={() => copyText(subject.reportSentence, `sentence-${index}`)}
-                      >
-                        {copied === `sentence-${index}` ? '✓ Copied' : 'Copy Sentence'}
-                      </button>
+              {result && (
+                <>
+                  {visibleSubjects.map((subject, index) => {
+                    const genderLower = subject.gender.toLowerCase()
+                    const genderClass = genderLower.includes('male') && !genderLower.includes('female')
+                      ? 'gender-male'
+                      : genderLower.includes('female')
+                      ? 'gender-female'
+                      : 'gender-unknown'
+
+                    return (
+                      <div key={index} className="subject-card">
+                        <div className="subject-card-header">
+                          <span className="subject-badge">Subject {subject.subjectNumber}</span>
+                          <div className="subject-meta">
+                            <span className={`gender-badge ${genderClass}`}>{subject.gender}</span>
+                            <span style={{ color: 'rgba(255,255,255,0.3)' }}>{subject.subjectType}</span>
+                            <button className="dismiss-btn" onClick={() => dismissSubject(subject.subjectNumber)}>
+                              ✕ Remove
+                            </button>
+                          </div>
+                        </div>
+                        <div className="subject-card-body">
+                          <div className="result-row"><div className="result-label">Ethnicity</div><div className="result-value">{subject.ethnicity}</div></div>
+                          <div className="result-row"><div className="result-label">Height / Build</div><div className="result-value">{subject.heightBuild}</div></div>
+                          <div className="result-row"><div className="result-label">Head / Hair</div><div className="result-value">{subject.headHair}</div></div>
+                          <div className="result-row"><div className="result-label">Upper Body</div><div className="result-value">{subject.upperBody}</div></div>
+                          <div className="result-row"><div className="result-label">Lower Body</div><div className="result-value">{subject.lowerBody}</div></div>
+                          <div className="result-row"><div className="result-label">Footwear</div><div className="result-value">{subject.footwear}</div></div>
+                          <div className="result-row"><div className="result-label">Objects / Items</div><div className="result-value">{subject.objects}</div></div>
+                          <div className="result-row"><div className="result-label">Activity</div><div className="result-value">{subject.activity}</div></div>
+                          <div className="report-sentence">{subject.reportSentence}</div>
+                          <div>
+                            <button
+                              className={`copy-btn ${copied === `full-${index}` ? 'copied' : ''}`}
+                              onClick={() => copyText(getFullDescription(subject), `full-${index}`)}
+                            >
+                              {copied === `full-${index}` ? '✓ Copied' : 'Copy Full'}
+                            </button>
+                            <button
+                              className={`copy-btn ${copied === `sentence-${index}` ? 'copied' : ''}`}
+                              onClick={() => copyText(subject.reportSentence, `sentence-${index}`)}
+                            >
+                              {copied === `sentence-${index}` ? '✓ Copied' : 'Copy Sentence'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+
+                  {/* Dismissed subjects */}
+                  {dismissedList.length > 0 && (
+                    <div className="dismissed-section">
+                      <div className="mono" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', marginBottom: '8px', letterSpacing: '0.06em' }}>REMOVED AS FALSE DETECTION:</div>
+                      {dismissedList.map(s => (
+                        <div key={s.subjectNumber} className="dismissed-row">
+                          <span className="mono" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)' }}>Subject {s.subjectNumber} — {s.gender} · {s.subjectType}</span>
+                          <button className="undo-btn" onClick={() => undoDismiss(s.subjectNumber)}>↩ Undo</button>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                </div>
-              ))}
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
