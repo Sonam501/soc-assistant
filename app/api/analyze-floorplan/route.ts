@@ -41,18 +41,26 @@ CRITICAL RULES:
 - Never guess or fabricate street names, directions, or camera positions
 - If something cannot be confirmed from the image, say "Cannot confirm"
 - Be specific and useful for a dispatcher describing a location to police
-- For direction, use the compass rose visible on the map to determine EXACTLY which way the camera is pointing (N/S/E/W/NE/NW/SE/SW). Look at the arrow/cone symbol on the camera icon to determine facing direction.
+
+FOR THE "direction" FIELD — THIS IS CRITICAL:
+- "direction" means WHERE ON THE PROPERTY the camera is physically located, based on the compass
+- Use the compass rose on the map to orient yourself (N/S/E/W/NE/NW/SE/SW)
+- Example: if the camera is in the bottom-left corner of the property and the compass shows south is down, the direction is "SW"
+- Example: if the camera is at the top-right of the property and north is up, the direction is "NE"
+- DO NOT use the direction the camera lens is pointing — use the camera's POSITION on the property relative to the compass
+- If no compass rose is visible on the map, assume north is up (standard map convention) and determine position accordingly
+- Always return one of: N, S, E, W, NE, NW, SE, SW
 
 Respond ONLY with valid JSON in exactly this format:
 {
   "cameraFound": true or false,
   "cameraLabel": "The exact label or number shown on the map for this camera, or Cannot confirm",
-  "direction": "Exact compass direction the camera is FACING based on compass rose (N/S/E/W/NE/NW/SE/SW only) or Cannot confirm",
+  "direction": "Where on the property the camera is located based on compass (N/S/E/W/NE/NW/SE/SW only)",
   "nearestEntrance": "The nearest entrance or exit to this camera based on the map",
   "closestCrossStreet": "The closest cross street or intersection visible on the map, or Cannot confirm",
   "streetAddress": "Any address or street names visible on the map near this camera",
   "additionalDetails": "Any other useful dispatch details visible on the map such as parking areas, building names, landmarks, gate numbers",
-  "dispatchSummary": "A single professional sentence describing the camera location for use during police dispatch. Example: Camera 05 is located at the Entrance Gate on Alessandro Blvd, facing north toward the street, near the intersection of Alessandro Blvd and Day St."
+  "dispatchSummary": "A single professional sentence describing the camera location for use during police dispatch. Example: Camera 05 is located at the Entrance Gate on Alessandro Blvd, at the north end of the property near the intersection of Alessandro Blvd and Day St."
 }`
             },
           ],
