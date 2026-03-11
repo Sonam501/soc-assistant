@@ -58,7 +58,7 @@ export default function LoginPage() {
           padding: 20px;
         }
         .login-box {
-          width: 100%; max-width: 420px;
+          width: 100%; max-width: 460px;
           background: rgba(255,255,255,0.025);
           border: 1px solid rgba(255,255,255,0.08);
           border-radius: 2px;
@@ -78,6 +78,7 @@ export default function LoginPage() {
           border: 1px solid rgba(0,255,178,0.3);
           border-radius: 2px;
           display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0;
         }
         .login-title {
           font-size: 22px; font-weight: 800;
@@ -155,7 +156,7 @@ export default function LoginPage() {
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
               </div>
-              <span style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff', whitespace: 'nowrap'} }}>
+              <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#fff', whiteSpace: 'nowrap' }}>
                 Keystone Dispatch Assistant
               </span>
             </div>
@@ -195,7 +196,7 @@ export default function LoginPage() {
               onClick={handleLogin}
               disabled={loading}
             >
-              {loading ? 'Authenticating...' : 'Login to Keystone'}
+              {loading ? 'Authenticating...' : 'Login to Keystone Dispatch Assistant'}
             </button>
           </div>
 
