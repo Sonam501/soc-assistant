@@ -8,7 +8,6 @@ type FloorplanResult = {
   cameraFound: boolean
   cameraLabel: string
   direction: string
-  coverageArea: string
   nearestEntrance: string
   closestCrossStreet: string
   streetAddress: string
@@ -210,7 +209,6 @@ export default function FloorplanPage() {
 
                   <div className="section-title">Camera Location</div>
 
-                  {/* Direction highlight */}
                   <div style={{ display: 'flex', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                     <div className="direction-badge" style={{
                       background: result.direction === 'Cannot confirm' ? 'rgba(255,255,255,0.04)' : 'rgba(0,255,178,0.08)',
@@ -228,10 +226,6 @@ export default function FloorplanPage() {
                   <div className="result-row">
                     <div className="result-label">Camera Label</div>
                     <div className="result-value">{result.cameraLabel}</div>
-                  </div>
-                  <div className="result-row">
-                    <div className="result-label">Coverage Area</div>
-                    <div className="result-value">{result.coverageArea}</div>
                   </div>
                   <div className="result-row">
                     <div className="result-label">Nearest Entrance</div>
@@ -268,7 +262,7 @@ export default function FloorplanPage() {
                     <button
                       className={`copy-btn ${copied === 'full' ? 'copied' : ''}`}
                       onClick={() => copyText(
-                        `Camera: ${result.cameraLabel}\nDirection: ${result.direction}\nCoverage: ${result.coverageArea}\nNearest Entrance: ${result.nearestEntrance}\nCross Street: ${result.closestCrossStreet}\nAddress: ${result.streetAddress}\nDetails: ${result.additionalDetails}\n\nDispatch Summary: ${result.dispatchSummary}`,
+                        `Camera: ${result.cameraLabel}\nDirection: ${result.direction}\nNearest Entrance: ${result.nearestEntrance}\nCross Street: ${result.closestCrossStreet}\nAddress: ${result.streetAddress}\nDetails: ${result.additionalDetails}\n\nDispatch Summary: ${result.dispatchSummary}`,
                         'full'
                       )}
                     >

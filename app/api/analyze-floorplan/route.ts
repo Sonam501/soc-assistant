@@ -41,13 +41,13 @@ CRITICAL RULES:
 - Never guess or fabricate street names, directions, or camera positions
 - If something cannot be confirmed from the image, say "Cannot confirm"
 - Be specific and useful for a dispatcher describing a location to police
+- For direction, use the compass rose visible on the map to determine EXACTLY which way the camera is pointing (N/S/E/W/NE/NW/SE/SW). Look at the arrow/cone symbol on the camera icon to determine facing direction.
 
 Respond ONLY with valid JSON in exactly this format:
 {
   "cameraFound": true or false,
   "cameraLabel": "The exact label or number shown on the map for this camera, or Cannot confirm",
-  "direction": "Which direction the camera is facing based on compass rose or layout (N/S/E/W/NE/NW/SE/SW) or Cannot confirm",
-  "coverageArea": "What area or zone the camera covers based on its position on the map",
+  "direction": "Exact compass direction the camera is FACING based on compass rose (N/S/E/W/NE/NW/SE/SW only) or Cannot confirm",
   "nearestEntrance": "The nearest entrance or exit to this camera based on the map",
   "closestCrossStreet": "The closest cross street or intersection visible on the map, or Cannot confirm",
   "streetAddress": "Any address or street names visible on the map near this camera",
