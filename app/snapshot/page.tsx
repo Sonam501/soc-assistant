@@ -256,6 +256,8 @@ Activity: ${s.activity}`
                           </div>
                         </div>
                         <div className="subject-card-body">
+                          <div className="result-row"><div className="result-label">Gender</div><div className="result-value">{subject.gender}</div></div>
+                          <div className="result-row"><div className="result-label">Ethnicity</div><div className="result-value">{subject.ethnicity}</div></div>
                           <div className="result-row"><div className="result-label">Ethnicity</div><div className="result-value">{subject.ethnicity}</div></div>
                           <div className="result-row"><div className="result-label">Height / Build</div><div className="result-value">{subject.heightBuild}</div></div>
                           <div className="result-row"><div className="result-label">Head / Hair</div><div className="result-value">{subject.headHair}</div></div>
