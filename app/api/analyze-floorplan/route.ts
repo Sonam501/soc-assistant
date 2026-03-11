@@ -42,13 +42,26 @@ CRITICAL RULES:
 - If something cannot be confirmed from the image, say "Cannot confirm"
 - Be specific and useful for a dispatcher describing a location to police
 
-FOR THE "direction" FIELD — THIS IS CRITICAL:
-- "direction" means WHERE ON THE PROPERTY the camera is physically located, based on the compass
-- Use the compass rose on the map to orient yourself (N/S/E/W/NE/NW/SE/SW)
-- Example: if the camera is in the bottom-left corner of the property and the compass shows south is down, the direction is "SW"
-- Example: if the camera is at the top-right of the property and north is up, the direction is "NE"
-- DO NOT use the direction the camera lens is pointing — use the camera's POSITION on the property relative to the compass
-- If no compass rose is visible on the map, assume north is up (standard map convention) and determine position accordingly
+PROPERTY BOUNDARY RULE:
+- If the map shows visible boundary lines (red lines, fence lines, drawn outlines, or any marked perimeter), those lines define the property
+- Only consider cameras and features INSIDE the boundary as part of the property
+- Ignore any cameras, icons, or labels that fall outside the boundary lines
+- Use the boundary edges (not the image edges) to determine north/south/east/west positions within the property
+
+COMPASS RULES — READ CAREFULLY:
+- Always look for a compass rose anywhere on the map before doing anything else
+- If a compass rose is present, it is the absolute ground truth for direction — use it exactly as drawn
+- If the compass rose is tilted at an angle, treat that tilted angle as true north — do NOT straighten it or assume north is up
+- Example: if the N arrow on the compass points toward the upper-left of the image, then upper-left IS north for this map
+- All camera position directions must be calculated based on the compass as it actually appears, including any tilt
+- If NO compass rose is visible anywhere on the map, only then assume north is up (standard map convention)
+
+FOR THE "direction" FIELD:
+- "direction" means WHERE ON THE PROPERTY the camera is physically located, relative to the compass
+- Use the compass (with tilt accounted for) to determine the camera's position within the property boundary
+- Example: camera in the bottom-left corner, compass shows SW is bottom-left → direction is "SW"
+- Example: compass is tilted so north points upper-left, camera is in upper-right → direction is "SE"
+- DO NOT use the direction the camera lens is pointing — use the camera's POSITION on the property
 - Always return one of: N, S, E, W, NE, NW, SE, SW
 
 Respond ONLY with valid JSON in exactly this format:
