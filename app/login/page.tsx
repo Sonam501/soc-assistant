@@ -155,12 +155,12 @@ export default function LoginPage() {
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
               </div>
-              <span style={{ fontSize: '15px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#fff' }}>
-                SOC Assistant
+              <span style={{ fontSize: '22px', fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fff' }}>
+                Keystone Dispatch Assistant
               </span>
             </div>
             <h1 className="login-title">Operator Login</h1>
-            <p className="login-subtitle">Security Operations Center</p>
+            <p className="login-subtitle">Keystone Security Operations Center</p>
           </div>
 
           <div className="login-body">
@@ -195,7 +195,7 @@ export default function LoginPage() {
               onClick={handleLogin}
               disabled={loading}
             >
-              {loading ? 'Authenticating...' : 'Login to SOC Assistant'}
+              {loading ? 'Authenticating...' : 'Login to Keystone Dispatch Assistant'}
             </button>
           </div>
 
