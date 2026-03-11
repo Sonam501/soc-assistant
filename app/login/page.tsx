@@ -58,7 +58,7 @@ export default function LoginPage() {
           padding: 20px;
         }
         .login-box {
-          width: 100%; max-width: 460px;
+          width: 100%; max-width: 560px;
           background: rgba(255,255,255,0.025);
           border: 1px solid rgba(255,255,255,0.08);
           border-radius: 2px;
