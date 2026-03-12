@@ -14,76 +14,116 @@ export async function POST(req: NextRequest) {
     }
 
     const cameraContext = cameraName
-      ? `The operator is asking specifically about camera: "${cameraName}". Focus your analysis on locating and describing this camera.`
-      : 'The operator has not specified a camera. Describe all visible cameras and general layout.'
+      ? `The operator is asking specifically about camera: "${cameraName}".`
+      : 'The operator has not specified a camera.'
 
-    const message = await client.messages.create({
+    const imageSource = {
+      type: 'base64' as const,
+      media_type: (mediaType || 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+      data: image,
+    }
+
+    // STEP 1: Reasoning call — force the AI to think through compass and position before answering
+    const reasoningCall = await client.messages.create({
       model: 'claude-opus-4-6',
-      max_tokens: 2048,
+      max_tokens: 1024,
       messages: [
         {
           role: 'user',
           content: [
             {
               type: 'image',
-              source: {
-                type: 'base64',
-                media_type: mediaType || 'image/jpeg',
-                data: image,
-              },
+              source: imageSource,
             },
             {
               type: 'text',
-              text: `You are a security operations analyst reading a property floorplan or aerial map for dispatch purposes. ${cameraContext}
+              text: `You are analyzing a security floorplan or aerial map. ${cameraContext}
 
-CRITICAL RULES:
-- Only state what is clearly visible in the image
-- Never guess or fabricate street names, directions, or camera positions
-- If something cannot be confirmed from the image, say "Cannot confirm"
-- Be specific and useful for a dispatcher describing a location to police
+Work through these steps carefully and write your answers:
 
-PROPERTY BOUNDARY RULE:
-- If the map shows visible boundary lines (red lines, fence lines, drawn outlines, or any marked perimeter), those lines define the property
-- Only consider cameras and features INSIDE the boundary as part of the property
-- Ignore any cameras, icons, or labels that fall outside the boundary lines
-- Use the boundary edges (not the image edges) to determine north/south/east/west positions within the property
+STEP 1 — COMPASS:
+Look carefully at the entire image for a compass rose.
+- Where exactly is it on the image? (top-left, bottom-left, etc.)
+- Which direction is the N arrow actually pointing on screen? (straight up, upper-left, upper-right, etc.)
+- Is the compass tilted? If so, describe the tilt angle.
+- Write: "The compass N arrow points toward [direction on screen]"
 
-COMPASS RULES — READ CAREFULLY:
-- Always look for a compass rose anywhere on the map before doing anything else
-- If a compass rose is present, it is the absolute ground truth for direction — use it exactly as drawn
-- If the compass rose is tilted at an angle, treat that tilted angle as true north — do NOT straighten it or assume north is up
-- Example: if the N arrow on the compass points toward the upper-left of the image, then upper-left IS north for this map
-- All camera position directions must be calculated based on the compass as it actually appears, including any tilt
-- If NO compass rose is visible anywhere on the map, only then assume north is up (standard map convention)
+STEP 2 — PROPERTY BOUNDARY:
+- Are there any visible boundary lines (red lines, fence outlines, perimeter markings)?
+- If yes, describe where the boundary is.
+- What are the edges of the property on screen? (top, bottom, left, right edges of the bounded area)
 
-FOR THE "direction" FIELD — CRITICAL:
-- "direction" means WHERE ON THE PROPERTY the camera is physically located, relative to the compass
-- Use the compass (with tilt accounted for) to determine the camera's position within the property boundary
-- Example: camera in the bottom-left corner, compass shows SW is bottom-left → direction is "SW"
-- Example: compass is tilted so north points upper-left, camera is in upper-right → direction is "SE"
-- DO NOT use the direction the camera lens is pointing — use the camera's POSITION on the property
-- CRITICAL: NEVER use the camera label name or text to determine direction — a camera called "West Lot" may not be on the west side of the property. Only use the camera's VISUAL POSITION on the map relative to the compass
-- CRITICAL: NEVER use nearby street names to determine direction — a camera near "Central Ave" on the right side of the map is not necessarily east if the compass says otherwise
-- Always return one of: N, S, E, W, NE, NW, SE, SW
+STEP 3 — CAMERA LOCATION ON SCREEN:
+- Find the camera labeled "${cameraName || 'all cameras'}".
+- Ignore the camera's label name completely — do not use it for direction.
+- Where is this camera icon VISUALLY on the screen? (top-left area, bottom-right area, center-left, etc.)
+- Describe its position relative to the property boundary edges.
 
-Respond ONLY with valid JSON in exactly this format:
-{
-  "cameraFound": true or false,
-  "cameraLabel": "The exact label or number shown on the map for this camera, or Cannot confirm",
-  "direction": "Where on the property the camera is located based on compass (N/S/E/W/NE/NW/SE/SW only)",
-  "nearestEntrance": "The nearest entrance or exit to this camera based on the map",
-  "closestCrossStreet": "The closest cross street or intersection visible on the map, or Cannot confirm",
-  "streetAddress": "Any address or street names visible on the map near this camera",
-  "additionalDetails": "Any other useful dispatch details visible on the map such as parking areas, building names, landmarks, gate numbers",
-  "dispatchSummary": "A single professional sentence describing the camera location for use during police dispatch. Example: Camera 05 is located at the Entrance Gate on Alessandro Blvd, at the north end of the property near the intersection of Alessandro Blvd and Day St."
-}`
+STEP 4 — DIRECTION CALCULATION:
+- Using ONLY the compass N direction from Step 1 and the camera screen position from Step 3:
+- If N points upper-left, then upper-left of property = N, lower-right = S, upper-right = E... wait, recalculate properly.
+- Map out all 8 directions based on where N actually points.
+- Then place the camera into one of those 8 directions based on its visual position.
+- Write: "Therefore the camera is located in the [N/S/E/W/NE/NW/SE/SW] portion of the property"
+
+Be precise and show all reasoning.`,
             },
           ],
         },
       ],
     })
 
-    const text = message.content[0].type === 'text' ? message.content[0].text : ''
+    const reasoning = reasoningCall.content[0].type === 'text' ? reasoningCall.content[0].text : ''
+
+    // STEP 2: JSON call — use the reasoning to produce final structured output
+    const jsonCall = await client.messages.create({
+      model: 'claude-opus-4-6',
+      max_tokens: 1024,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: imageSource,
+            },
+            {
+              type: 'text',
+              text: `You are analyzing a security floorplan or aerial map for dispatch purposes. ${cameraContext}
+
+A careful step-by-step analysis of this map has already been completed. Here is that reasoning:
+
+---
+${reasoning}
+---
+
+Using the above reasoning as your ground truth, now produce the final dispatch information.
+
+Additional rules:
+- Only state what is clearly visible in the image
+- Never fabricate street names, addresses, or details not visible
+- If something cannot be confirmed, say "Cannot confirm"
+- For nearestEntrance, closestCrossStreet, streetAddress — look at the image carefully for visible labels
+- For direction — use EXACTLY what the reasoning concluded in Step 4, do not recalculate
+
+Respond ONLY with valid JSON in exactly this format:
+{
+  "cameraFound": true or false,
+  "cameraLabel": "The exact label or number shown on the map for this camera, or Cannot confirm",
+  "direction": "The direction from Step 4 of the reasoning (N/S/E/W/NE/NW/SE/SW only)",
+  "nearestEntrance": "The nearest entrance or exit to this camera based on the map",
+  "closestCrossStreet": "The closest cross street or intersection visible on the map, or Cannot confirm",
+  "streetAddress": "Any address or street names visible on the map near this camera",
+  "additionalDetails": "Any other useful dispatch details visible on the map such as parking areas, building names, landmarks, gate numbers",
+  "dispatchSummary": "A single professional sentence describing the camera location for use during police dispatch."
+}`,
+            },
+          ],
+        },
+      ],
+    })
+
+    const text = jsonCall.content[0].type === 'text' ? jsonCall.content[0].text : ''
     const cleaned = text.replace(/```json|```/g, '').trim()
     const result = JSON.parse(cleaned)
 
