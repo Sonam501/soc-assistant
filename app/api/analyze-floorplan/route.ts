@@ -38,20 +38,21 @@ export async function POST(req: NextRequest) {
 
 Before producing your final JSON, work through these steps internally:
 
-STEP 1 — COMPASS: Find the compass rose anywhere on the image. Note exactly which direction the N arrow points on screen (e.g. upper-left, straight up, upper-right). If tilted, treat that tilt as true north. If no compass found, assume N is straight up.
+STEP 1 - COMPASS: Find the compass rose anywhere on the image. Note exactly which direction the N arrow points on screen (e.g. upper-left, straight up, upper-right). If tilted, treat that tilt as true north. If no compass found, assume N is straight up.
 
-STEP 2 — BOUNDARY: Identify any visible boundary lines (red lines, fence lines, perimeter markings). These define the property. If none visible, use the image edges.
+STEP 2 - BOUNDARY: Identify any visible boundary lines (red lines, fence lines, perimeter markings). These define the property. If none visible, use the image edges.
 
-STEP 3 — PROPERTY CENTER: Find the approximate center point of the property boundary. All directions are relative to this center.
+STEP 3 - PROPERTY CENTER: Find the approximate center point of the property boundary. All directions are relative to this center.
 
-STEP 4 — LOCATE CAMERA: Find the camera marker for "${cameraName || 'the requested camera'}". Camera markers may be arrows, dots, circles, pins, or labeled points. Note its position relative to the property center on screen. NEVER use the camera label name or nearby street names to determine direction.
+STEP 4 - LOCATE CAMERA: Find the camera marker for "${cameraName || 'the requested camera'}". Camera markers may be arrows, dots, circles, pins, or labeled points. Note its position relative to the property center on screen. NEVER use the camera label name or nearby street names to determine direction.
 
-STEP 5 — NORMALIZE AND CALCULATE: Mentally rotate the map so the compass N arrow points straight up. After rotation: up=N, down=S, right=E, left=W. Now determine which portion of the property the camera sits in relative to center. Choose one of: N, S, E, W, NE, NW, SE, SW.
+STEP 5 - NORMALIZE AND CALCULATE: Mentally rotate the map so the compass N arrow points straight up. After rotation: up=N, down=S, right=E, left=W. Now determine which portion of the property the camera sits in relative to center. Choose one of: N, S, E, W, NE, NW, SE, SW.
 
 RULES:
 - Only state what is clearly visible in the image
 - Never fabricate street names, addresses, or details
 - If something cannot be confirmed, say "Cannot confirm"
+- You MUST respond with valid JSON only, no other text before or after
 
 Respond ONLY with valid JSON in exactly this format:
 {
