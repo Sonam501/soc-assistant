@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
     const cameraContext = cameraName
       ? `The operator is asking specifically about camera: "${cameraName}".`
-      : 'The operator has not specified a camera. Describe all visible cameras and general layout.'
+      : 'The operator has not specified a camera.'
 
     const imageSource = {
       type: 'base64' as const,
@@ -23,10 +23,13 @@ export async function POST(req: NextRequest) {
       data: image,
     }
 
-    // CALL 1 — Step-by-step reasoning to lock in compass orientation and camera position
+    /* ------------------------------
+       STEP 1: REASONING CALL
+       ------------------------------ */
+
     const reasoningCall = await client.messages.create({
       model: 'claude-opus-4-6',
-      max_tokens: 1500,
+      max_tokens: 1200,
       messages: [
         {
           role: 'user',
@@ -39,62 +42,126 @@ export async function POST(req: NextRequest) {
               type: 'text',
               text: `You are analyzing a security floorplan or aerial map. ${cameraContext}
 
-Work through every step carefully and write out your full reasoning.
+Follow these steps carefully.
 
-STEP 1 — FIND THE COMPASS:
-Scan the entire image for a compass rose or any directional indicator.
-- Where is it located on the image? (e.g. bottom-left corner, top-right corner)
-- Which direction is the N arrow physically pointing on screen? (e.g. straight up, toward upper-left, toward upper-right)
-- Is the compass tilted at an angle? Describe it precisely.
-- Write exactly: "The compass N arrow points toward [screen direction]"
-- If no compass is visible anywhere, write: "No compass found. Assuming N is straight up."
+STEP 1 — COMPASS DETECTION
+Look carefully for a compass rose anywhere in the image.
 
-STEP 2 — IDENTIFY PROPERTY BOUNDARY:
-- Are there any visible boundary lines on this map? (red lines, fence lines, drawn outlines, perimeter markings)
-- If yes, describe where the boundary edges are on screen (e.g. "boundary runs along the top, left and bottom of the image, with Central Ave forming the right edge")
-- If no boundary lines are visible, use the full image edges as the property boundary.
+Describe:
+• Where it is located on screen (top-left, bottom-left, etc)
+• Which direction the N arrow is pointing on the screen
+• Whether the compass is tilted
 
-STEP 2.5 — PROPERTY CENTER:
-- Based on the boundary identified in Step 2, determine the approximate center point of the property.
-- Describe where the center is on screen (e.g. "center is roughly in the middle of the image, slightly left of center")
-- All direction calculations must be made relative to this center point.
+Write clearly:
+"The compass N arrow points toward [screen direction]."
 
-STEP 3 — LOCATE THE CAMERA:
-- Locate the camera marker that corresponds to "${cameraName || 'the requested camera'}".
-- Camera markers may appear as arrows, dots, circles, pins, or labeled points on the map.
-- CRITICAL: Ignore the camera label name completely when determining position. A camera called "West Lot" may not be on the west side.
-- CRITICAL: Ignore nearby street names when determining position.
-- Describe exactly where the camera marker is on screen relative to the property boundary and center point.
-- Example: "The camera marker is in the upper-right area of the property, above and to the right of the property center"
+If no compass exists, assume north is straight up.
 
-STEP 4 — NORMALIZE MAP ORIENTATION:
-Mentally rotate the entire map so that the compass N arrow from Step 1 is pointing straight up.
-After this mental rotation:
-- Up = North
-- Down = South  
-- Right = East
-- Left = West
-- Upper-right = NE, Upper-left = NW, Lower-right = SE, Lower-left = SW
+---
 
-Now apply this normalized orientation to the camera's position relative to the property center.
+STEP 2 — PROPERTY BOUNDARY
 
-STEP 5 — FINAL DIRECTION:
-Based on Steps 3 and 4, determine where the camera sits relative to the property center in the normalized orientation.
-Write exactly: "Therefore the camera is located in the [N/S/E/W/NE/NW/SE/SW] portion of the property."
+Look for any visible boundary markers such as:
 
-Be precise and thorough. Show all reasoning clearly.`,
+• red perimeter lines
+• fences
+• walls
+• lot edges
+• property outlines
+
+Describe the shape of the property and which parts of the screen represent:
+
+top edge  
+bottom edge  
+left edge  
+right edge  
+
+---
+
+STEP 3 — PROPERTY CENTER
+
+Estimate the approximate center of the property boundary.
+
+All directions must be calculated relative to this center point.
+
+---
+
+STEP 4 — CAMERA LOCATION
+
+Locate the camera marker for "${cameraName || 'all cameras'}".
+
+Camera markers may appear as:
+
+• arrows
+• camera icons
+• dots
+• labeled points
+
+Ignore the camera label text when determining direction.
+
+Describe the camera's position relative to the property center:
+
+examples:
+• upper-left area
+• right side
+• lower-middle
+• center-left
+
+---
+
+STEP 5 — NORMALIZE MAP ORIENTATION
+
+Before calculating direction, mentally rotate the map so the compass N arrow points straight up.
+
+After this rotation the map should follow:
+
+Up = North  
+Down = South  
+Right = East  
+Left = West  
+
+---
+
+STEP 6 — FINAL DIRECTION
+
+Using the rotated orientation and the camera's position relative to the property center:
+
+Determine the direction of the camera.
+
+Possible answers:
+
+N  
+S  
+E  
+W  
+NE  
+NW  
+SE  
+SW  
+
+Write exactly:
+
+"Therefore the camera is located in the [direction] portion of the property."
+
+Show all reasoning.`,
             },
           ],
         },
       ],
     })
 
-    const reasoning = reasoningCall.content[0].type === 'text' ? reasoningCall.content[0].text : ''
+    const reasoning =
+      reasoningCall.content[0].type === 'text'
+        ? reasoningCall.content[0].text
+        : ''
 
-    // CALL 2 — Use reasoning as ground truth, produce final JSON only
+    /* ------------------------------
+       STEP 2: FINAL JSON OUTPUT
+       ------------------------------ */
+
     const jsonCall = await client.messages.create({
       model: 'claude-opus-4-6',
-      max_tokens: 1024,
+      max_tokens: 800,
       messages: [
         {
           role: 'user',
@@ -105,32 +172,35 @@ Be precise and thorough. Show all reasoning clearly.`,
             },
             {
               type: 'text',
-              text: `You are a security operations analyst producing dispatch information for a floorplan or aerial map. ${cameraContext}
+              text: `You are generating structured dispatch information.
 
-A thorough step-by-step analysis of this map has already been completed. Here is that reasoning:
+The map has already been analyzed and the reasoning below is the ground truth.
 
----
+Do NOT reinterpret the image again.
+
+--- REASONING ---
 ${reasoning}
 ---
 
-CRITICAL: Do NOT reinterpret the map or recalculate directions. Use the reasoning above as absolute ground truth for the direction field. Only use the image now to extract visible text labels such as street names, entrance labels, and addresses.
+Using only the reasoning above, produce the final structured output.
 
 Rules:
-- Only state what is clearly visible in the image
-- Never fabricate street names, addresses, or details not visible
-- If something cannot be confirmed from the image, say "Cannot confirm"
-- For "direction" — copy EXACTLY what Step 5 of the reasoning concluded. Do not change it.
+• Never fabricate street names or addresses
+• Only report what is visible
+• If unknown say "Cannot confirm"
+• Direction must match exactly what Step 6 concluded
 
-Respond ONLY with valid JSON in exactly this format:
+Respond ONLY with valid JSON in this format:
+
 {
-  "cameraFound": true or false,
-  "cameraLabel": "The exact label or number shown on the map for this camera, or Cannot confirm",
-  "direction": "The exact direction from Step 5 of the reasoning (N/S/E/W/NE/NW/SE/SW only)",
-  "nearestEntrance": "The nearest entrance or exit to this camera based on the map",
-  "closestCrossStreet": "The closest cross street or intersection visible on the map, or Cannot confirm",
-  "streetAddress": "Any address or street names visible on the map near this camera",
-  "additionalDetails": "Any other useful dispatch details visible on the map such as parking areas, building names, landmarks, gate numbers",
-  "dispatchSummary": "A single professional sentence describing the camera location for use during police dispatch."
+  "cameraFound": true,
+  "cameraLabel": "Exact label or Cannot confirm",
+  "direction": "N/S/E/W/NE/NW/SE/SW",
+  "nearestEntrance": "Nearest visible entrance or Cannot confirm",
+  "closestCrossStreet": "Closest cross street or Cannot confirm",
+  "streetAddress": "Any visible address or Cannot confirm",
+  "additionalDetails": "Useful map landmarks",
+  "dispatchSummary": "One professional sentence describing the camera location for police dispatch."
 }`,
             },
           ],
@@ -138,13 +208,20 @@ Respond ONLY with valid JSON in exactly this format:
       ],
     })
 
-    const text = jsonCall.content[0].type === 'text' ? jsonCall.content[0].text : ''
+    const text =
+      jsonCall.content[0].type === 'text'
+        ? jsonCall.content[0].text
+        : ''
+
     const cleaned = text.replace(/```json|```/g, '').trim()
     const result = JSON.parse(cleaned)
 
     return NextResponse.json(result)
   } catch (error) {
     console.error('Floorplan analysis error:', error)
-    return NextResponse.json({ error: 'Analysis failed. Please try again.' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Analysis failed. Please try again.' },
+      { status: 500 }
+    )
   }
 }
