@@ -148,3 +148,11 @@ Respond ONLY with valid JSON in exactly this format:
     return NextResponse.json({ error: 'Analysis failed. Please try again.' }, { status: 500 })
   }
 }
+{
+  "functions": {
+    "app/api/analyze-floorplan/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}
+```
