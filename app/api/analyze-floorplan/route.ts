@@ -56,12 +56,14 @@ COMPASS RULES — READ CAREFULLY:
 - All camera position directions must be calculated based on the compass as it actually appears, including any tilt
 - If NO compass rose is visible anywhere on the map, only then assume north is up (standard map convention)
 
-FOR THE "direction" FIELD:
+FOR THE "direction" FIELD — CRITICAL:
 - "direction" means WHERE ON THE PROPERTY the camera is physically located, relative to the compass
 - Use the compass (with tilt accounted for) to determine the camera's position within the property boundary
 - Example: camera in the bottom-left corner, compass shows SW is bottom-left → direction is "SW"
 - Example: compass is tilted so north points upper-left, camera is in upper-right → direction is "SE"
 - DO NOT use the direction the camera lens is pointing — use the camera's POSITION on the property
+- CRITICAL: NEVER use the camera label name or text to determine direction — a camera called "West Lot" may not be on the west side of the property. Only use the camera's VISUAL POSITION on the map relative to the compass
+- CRITICAL: NEVER use nearby street names to determine direction — a camera near "Central Ave" on the right side of the map is not necessarily east if the compass says otherwise
 - Always return one of: N, S, E, W, NE, NW, SE, SW
 
 Respond ONLY with valid JSON in exactly this format:
