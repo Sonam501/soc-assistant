@@ -209,19 +209,21 @@ export default function FloorplanPage() {
 
                   <div className="section-title">Camera Location</div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                    <div className="direction-badge" style={{
-                      background: result.direction === 'Cannot confirm' ? 'rgba(255,255,255,0.04)' : 'rgba(0,255,178,0.08)',
-                      borderColor: result.direction === 'Cannot confirm' ? 'rgba(255,255,255,0.1)' : 'rgba(0,255,178,0.3)',
-                      color: getDirectionColor(result.direction)
-                    }}>
-                      {result.direction === 'Cannot confirm' ? '?' : result.direction}
+                  {cameraName && (
+                    <div style={{ display: 'flex', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                      <div className="direction-badge" style={{
+                        background: result.direction === 'Cannot confirm' ? 'rgba(255,255,255,0.04)' : 'rgba(0,255,178,0.08)',
+                        borderColor: result.direction === 'Cannot confirm' ? 'rgba(255,255,255,0.1)' : 'rgba(0,255,178,0.3)',
+                        color: getDirectionColor(result.direction)
+                      }}>
+                        {result.direction === 'Cannot confirm' ? '?' : result.direction}
+                      </div>
+                      <div>
+                        <div className="mono" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.06em' }}>CAMERA LOCATION</div>
+                        <div style={{ fontSize: '13px', color: result.direction === 'Cannot confirm' ? 'rgba(255,255,255,0.3)' : '#E2E8F0', marginTop: '2px' }}>{result.direction}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="mono" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.06em' }}>FACING DIRECTION</div>
-                      <div style={{ fontSize: '13px', color: result.direction === 'Cannot confirm' ? 'rgba(255,255,255,0.3)' : '#E2E8F0', marginTop: '2px' }}>{result.direction}</div>
-                    </div>
-                  </div>
+                  )}
 
                   <div className="result-row">
                     <div className="result-label">Camera Label</div>
