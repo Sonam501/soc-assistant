@@ -50,13 +50,13 @@ STEP 5 - NORMALIZE AND CALCULATE: Mentally rotate the map so the compass N arrow
 
 STEP 6 - NEAREST ENTRANCE: Use this exact logic to determine the nearest entrance:
 - First, identify all roads and streets visible on the map and their labels
-- Then, for each visible road, look along the edge of the property boundary where it meets that road
-- Look for any gap, opening, driveway, pathway, or break in the boundary line where vehicles or people could enter from that road
-- Any such opening where the property boundary meets a road is an entrance
-- Only label something as an entrance if there is a clear visible opening or gap on a road — not just a road being nearby
+- A road label on the map means that road borders the property on that side — the entrance MUST be on the side where a labeled road exists
+- Then, for each labeled road, look along the property boundary where it meets that road for any gap, opening, driveway, or break where vehicles or people could enter
+- Always lead with the road name first: e.g. "Entrance on Laguna Grove Drive, north side of property"
+- Only label something as an entrance if there is a labeled road adjacent to it — do not guess entrances based on open space or visual driveway markings on unlabeled sides
 - If the opening is also labeled (e.g. "Entrance Gate", "Exit", "Main Entry"), include that label
 - The nearest entrance to the camera is the one closest to the camera marker on the map
-- If no clear opening can be confirmed, say "Cannot confirm"
+- If no labeled road is visible, say "Cannot confirm"
 
 RULES:
 - Only state what is clearly visible in the image
