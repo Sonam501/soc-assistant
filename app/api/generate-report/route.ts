@@ -71,7 +71,7 @@ MISSING FLAG RULES — these specific fields MUST be flagged if not stated:
 - Call reference number → if dispatch is mentioned but reference number not given → [MISSING: Call Reference No.]
 - Follow-up call details → if not mentioned → [MISSING: follow-up call details]
 - Police arrival time → if police arrival is mentioned but no exact time given → [MISSING: police arrival time]
-- Police department name → if dispatch is mentioned but the name of the police department is not stated → [MISSING: police department name]
+- Police department name → if dispatch, police, or law enforcement is mentioned anywhere in the notes but no police department name is stated → [MISSING: police department name] — this flag is MANDATORY whenever any form of dispatch or police contact is mentioned
 
 VOICE RULES:
 - Always use passive or impersonal constructions — never reveal an operator is acting
