@@ -48,6 +48,16 @@ STEP 4 - LOCATE CAMERA: Find the camera marker for "${cameraName || 'the request
 
 STEP 5 - NORMALIZE AND CALCULATE: Mentally rotate the map so the compass N arrow points straight up. After rotation: up=N, down=S, right=E, left=W. Now determine which portion of the property the camera sits in relative to center. Choose one of: N, S, E, W, NE, NW, SE, SW.
 
+STEP 6 - NEAREST ENTRANCE: Use this exact logic to determine the nearest entrance:
+- First, identify all roads and streets visible on the map and their labels
+- Then, for each visible road, look along the edge of the property boundary where it meets that road
+- Look for any gap, opening, driveway, pathway, or break in the boundary line where vehicles or people could enter from that road
+- Any such opening where the property boundary meets a road is an entrance
+- Only label something as an entrance if there is a clear visible opening or gap on a road — not just a road being nearby
+- If the opening is also labeled (e.g. "Entrance Gate", "Exit", "Main Entry"), include that label
+- The nearest entrance to the camera is the one closest to the camera marker on the map
+- If no clear opening can be confirmed, say "Cannot confirm"
+
 RULES:
 - Only state what is clearly visible in the image
 - Never fabricate street names, addresses, or details
@@ -59,7 +69,7 @@ Respond ONLY with valid JSON in exactly this format:
   "cameraFound": true or false,
   "cameraLabel": "The exact label or number shown on the map for this camera, or Cannot confirm",
   "direction": "Camera location on property based on compass normalization (N/S/E/W/NE/NW/SE/SW only)",
-  "nearestEntrance": "The nearest entrance or exit to this camera based on the map",
+  "nearestEntrance": "The nearest entrance to this camera — describe which road it is on and where the property opens onto that road",
   "closestCrossStreet": "The closest cross street or intersection visible on the map, or Cannot confirm",
   "streetAddress": "Any address or street names visible on the map near this camera",
   "additionalDetails": "Any other useful dispatch details visible on the map such as parking areas, building names, landmarks, gate numbers",
